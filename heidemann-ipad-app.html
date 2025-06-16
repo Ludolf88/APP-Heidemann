@@ -1,0 +1,2399 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Heidemann Auftrags-App</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Heidemann">
+    <meta name="theme-color" content="#ff6b35">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- App Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIHJ4PSIyMCIgZmlsbD0iI2ZmNmIzNSIvPjx0ZXh0IHg9IjUwIiB5PSI2NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjQ4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkg8L3RleHQ+PC9zdmc+">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiSGVpZGVtYW5uIEF1ZnRyYWdzLUFwcCIsInNob3J0X25hbWUiOiJIZWlkZW1hbm4iLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2Y1ZjVmNyIsInRoZW1lX2NvbG9yIjoiI2ZmNmIzNSIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQifQ==">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1d1d1f;
+            background: #f5f5f7;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            position: fixed;
+            width: 100%;
+        }
+        
+        .app-container {
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Smooth Scrolling */
+        .scrollable {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            flex: 1;
+        }
+        
+        /* Icon Styles */
+        .icon {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+            vertical-align: middle;
+        }
+        
+        .icon-sm { width: 20px; height: 20px; }
+        .icon-lg { width: 32px; height: 32px; }
+        .icon-xl { width: 48px; height: 48px; }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1d1d1f 0%, #ff6b35 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            border-radius: 0 0 24px 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+        
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+        }
+        
+        .logo::after {
+            content: "•";
+            color: #ff6b35;
+            margin-left: 6px;
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+        }
+        
+        /* Navigation */
+        .nav-header {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding-top: env(safe-area-inset-top);
+        }
+        
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .nav-button {
+            background: none;
+            border: none;
+            color: #ff6b35;
+            padding: 12px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 48px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .nav-button:active {
+            background: rgba(255, 107, 53, 0.1);
+            transform: scale(0.95);
+        }
+        
+        .nav-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            flex: 1;
+            text-align: center;
+        }
+        
+        /* Content */
+        .content {
+            padding: 0 30px 120px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Home Screen */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        
+        .action-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .action-card:active {
+            transform: translateY(-2px) scale(0.98);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        
+        .action-icon {
+            color: #ff6b35;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .action-title {
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .action-subtitle {
+            font-size: 1rem;
+            color: #86868b;
+        }
+        
+        /* Project Items */
+        .project-item {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .project-item:active {
+            transform: scale(0.98);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .project-info h3 {
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .project-info p {
+            font-size: 1rem;
+            color: #86868b;
+            margin-bottom: 4px;
+        }
+        
+        .project-icon {
+            color: #ff6b35;
+        }
+        
+        .project-photos {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .project-photos::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .photo-thumb {
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .photo-count {
+            width: 60px;
+            height: 60px;
+            min-width: 60px;
+            background: #f5f5f7;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #86868b;
+            border: 1px solid rgba(0,0,0,0.1);
+            font-weight: 500;
+        }
+        
+        /* Form Sections */
+        .form-section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #fff5f2 100%);
+            padding: 24px 30px;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .photo-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 48px;
+            white-space: nowrap;
+        }
+        
+        .photo-button:active {
+            background: #e55a2b;
+            transform: scale(0.95);
+        }
+        
+        .section-content {
+            padding: 30px;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 12px;
+            font-size: 1rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e5e5ea;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: white;
+            color: #1d1d1f;
+            min-height: 56px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        .form-input:focus {
+            border-color: #ff6b35;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        /* Option Groups */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        
+        .option-grid.cols-3 {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+        
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: #f8f9fa;
+            border: 2px solid #e5e5ea;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            min-height: 56px;
+        }
+        
+        .option-item:active {
+            transform: scale(0.98);
+        }
+        
+        .option-item.selected {
+            background: #fff5f2;
+            border-color: #ff6b35;
+            box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.1);
+        }
+        
+        .option-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .option-label {
+            font-size: 1rem;
+            color: #1d1d1f;
+            font-weight: 500;
+            cursor: pointer;
+            padding-left: 32px;
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+        
+        .option-label::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d2d2d7;
+            border-radius: 4px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .option-item.selected .option-label::before {
+            background: #ff6b35;
+            border-color: #ff6b35;
+        }
+        
+        .option-item.selected .option-label::after {
+            content: '✓';
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        /* Radio button styling */
+        .option-item input[type="radio"] ~ .option-label::before {
+            border-radius: 50%;
+        }
+        
+        .option-item.selected input[type="radio"] ~ .option-label::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            left: 6px;
+        }
+        
+        /* Photo Gallery */
+        .photo-gallery {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #e5e5ea;
+        }
+        
+        .gallery-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+        
+        .photo-item {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .photo-image {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid #e5e5ea;
+        }
+        
+        .photo-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            background: #ff3b30;
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .photo-remove:active {
+            background: #d70015;
+            transform: scale(0.9);
+        }
+        
+        /* Floating Action Buttons */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            z-index: 50;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        .fab {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .fab:active {
+            transform: scale(0.95);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+        }
+        
+        .fab-primary {
+            background: #ff6b35;
+            color: white;
+        }
+        
+        .fab-secondary {
+            background: #1d1d1f;
+            color: white;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 80px 30px;
+            color: #86868b;
+        }
+        
+        .empty-icon {
+            color: #d2d2d7;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .empty-title {
+            font-size: 1.4rem;
+            margin-bottom: 24px;
+            color: #1d1d1f;
+        }
+        
+        .primary-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: #ff6b35;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 56px;
+        }
+        
+        .primary-button:active {
+            background: #e55a2b;
+            transform: scale(0.98);
+        }
+        
+        /* Loading State */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff6b35;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            top: 30px;
+            top: calc(env(safe-area-inset-top) + 30px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ff6b35;
+            color: white;
+            padding: 16px 28px;
+            border-radius: 16px;
+            font-weight: 500;
+            z-index: 1000;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            max-width: 90vw;
+            font-size: 1rem;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+        
+        /* Success/Error States */
+        .notification.success {
+            background: #32d74b;
+        }
+        
+        .notification.error {
+            background: #ff3b30;
+        }
+        
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* iPad Specific Optimizations */
+        @media (min-width: 768px) {
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-row {
+                gap: 30px;
+            }
+            
+            .option-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .photo-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .content {
+                max-width: 1000px;
+                padding-left: 50px;
+                padding-right: 50px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 30px;
+            }
+            
+            .option-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .option-grid.cols-3 {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            
+            .photo-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+            
+            .section-content {
+                padding: 40px;
+            }
+            
+            .photo-image {
+                height: 180px;
+            }
+        }
+        
+        @media (min-width: 1366px) {
+            .content {
+                max-width: 1200px;
+                padding-left: 60px;
+                padding-right: 60px;
+            }
+        }
+        
+        /* Landscape Mode */
+        @media (orientation: landscape) and (max-height: 768px) {
+            .header {
+                padding: 30px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .content {
+                padding-bottom: 80px;
+            }
+        }
+        
+        /* Prevent iOS bounce */
+        .view {
+            position: relative;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .view.active {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Signature Area */
+        .signature-area {
+            border: 2px dashed #d2d2d7;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: #86868b;
+            background: #f5f5f7;
+            margin-top: 8px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        
+        /* Responsive Typography */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .nav-title {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.1rem;
+            }
+            
+            .photo-button span {
+                display: none;
+            }
+        }
+        
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #000;
+                color: #f5f5f7;
+            }
+            
+            .form-section,
+            .action-card,
+            .project-item {
+                background: #1c1c1e;
+                border-color: #38383a;
+            }
+            
+            .form-input {
+                background: #2c2c2e;
+                border-color: #38383a;
+                color: #f5f5f7;
+            }
+            
+            .option-item {
+                background: #2c2c2e;
+                border-color: #38383a;
+            }
+            
+            .nav-header {
+                background: rgba(28,28,30,0.95);
+                border-color: #38383a;
+            }
+            
+            .nav-title,
+            .section-title,
+            .action-title,
+            .project-info h3,
+            .form-label {
+                color: #f5f5f7;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Home View -->
+        <div id="homeView" class="view active">
+            <div class="scrollable">
+                <div class="header">
+                    <div class="logo">heidemann</div>
+                    <h1>Auftrags-App</h1>
+                    <p>Digitale Auftragserstellung für iPad</p>
+                </div>
+                
+                <div class="content">
+                    <div class="quick-actions">
+                        <div class="action-card" onclick="createNewProject()">
+                            <div class="action-icon">
+                                <svg class="icon icon-xl" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+                                </svg>
+                            </div>
+                            <div class="action-title">Neuer Auftrag</div>
+                            <div class="action-subtitle">Formular ausfüllen</div>
+                        </div>
+                        
+                        <div class="action-card" onclick="showProjects()">
+                            <div class="action-icon">
+                                <svg class="icon icon-xl" viewBox="0 0 24 24">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                            </div>
+                            <div class="action-title">Aufträge</div>
+                            <div class="action-subtitle" id="projectCount">0 gespeichert</div>
+                        </div>
+                        
+                        <div class="action-card" onclick="testCamera()">
+                            <div class="action-icon">
+                                <svg class="icon icon-xl" viewBox="0 0 24 24">
+                                    <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                </svg>
+                            </div>
+                            <div class="action-title">Kamera Test</div>
+                            <div class="action-subtitle">Funktion prüfen</div>
+                        </div>
+                        
+                        <div class="action-card" onclick="exportAllProjects()">
+                            <div class="action-icon">
+                                <svg class="icon icon-xl" viewBox="0 0 24 24">
+                                    <path d="M23,12L19,8V11H10V13H19V16M1,18V6C1,4.89 1.89,4 3,4H15A2,2 0 0,1 17,6V9H15V6H3V18H15V15H17V18A2,2 0 0,1 15,20H3C1.89,20 1,19.11 1,18Z"/>
+                                </svg>
+                            </div>
+                            <div class="action-title">Export</div>
+                            <div class="action-subtitle">Alle Aufträge</div>
+                        </div>
+                    </div>
+                    
+                    <div id="recentProjects" class="hidden">
+                        <h2 style="font-size: 1.6rem; font-weight: 600; color: #1d1d1f; margin: 40px 0 20px;">
+                            Letzte Aufträge
+                        </h2>
+                        <div id="recentProjectsList"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Projects View -->
+        <div id="projectsView" class="view hidden">
+            <div class="nav-header">
+                <div class="nav-content">
+                    <button class="nav-button" onclick="showHome()">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                        </svg>
+                    </button>
+                    <div class="nav-title">Alle Aufträge</div>
+                    <button class="nav-button" onclick="createNewProject()">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="scrollable">
+                <div class="content">
+                    <div id="projectsList"></div>
+                    
+                    <div id="emptyProjects" class="empty-state hidden">
+                        <div class="empty-icon">
+                            <svg class="icon icon-xl" viewBox="0 0 24 24">
+                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                            </svg>
+                        </div>
+                        <div class="empty-title">Noch keine Aufträge vorhanden</div>
+                        <button class="primary-button" onclick="createNewProject()">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                            </svg>
+                            Ersten Auftrag erstellen
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Form View -->
+        <div id="formView" class="view hidden">
+            <div class="nav-header">
+                <div class="nav-content">
+                    <button class="nav-button" onclick="showHome()">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                        </svg>
+                    </button>
+                    <div class="nav-title" id="formTitle">Neuer Auftrag</div>
+                    <button class="nav-button" onclick="saveProject()" title="Speichern">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="scrollable">
+                <div class="content">
+                    <form id="projectForm">
+                        <!-- Adressinformationen -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22S19,14.25 19,9A7,7 0 0,0 12,2Z"/>
+                                    </svg>
+                                    Adressinformationen
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('address')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Straße und Hausnummer</label>
+                                        <input type="text" class="form-input" name="street" placeholder="Musterstraße 123">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Postleitzahl und Stadt</label>
+                                        <input type="text" class="form-input" name="city" placeholder="12345 Musterstadt">
+                                    </div>
+                                </div>
+                                <div id="photos-address" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Etagenangaben -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M21,20C21,21.11 20.11,22 19,22H5C3.89,22 3,21.11 3,20V4C3,2.89 3.89,2 5,2H19C20.11,2 21,2.89 21,4V20M19,20V4H5V20H19Z"/>
+                                    </svg>
+                                    Etagenangaben
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('floor')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-group">
+                                    <label class="form-label">Welche Etage:</label>
+                                    <div class="option-grid cols-3">
+                                        <label class="option-item">
+                                            <input type="radio" name="floor" value="EG" class="option-input">
+                                            <span class="option-label">Erdgeschoss</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="floor" value="1" class="option-input">
+                                            <span class="option-label">1. Etage</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="floor" value="2" class="option-input">
+                                            <span class="option-label">2. Etage</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="floor" value="3" class="option-input">
+                                            <span class="option-label">3. Etage</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="floor" value="4" class="option-input">
+                                            <span class="option-label">4. Etage</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="floor" value="5+" class="option-input">
+                                            <span class="option-label">5. Etage +</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Lage der Wohnung:</label>
+                                    <div class="option-grid">
+                                        <label class="option-item">
+                                            <input type="radio" name="position" value="rechts" class="option-input">
+                                            <span class="option-label">Rechts</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="position" value="links" class="option-input">
+                                            <span class="option-label">Links</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="position" value="vorne" class="option-input">
+                                            <span class="option-label">Vorne</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="position" value="hinten" class="option-input">
+                                            <span class="option-label">Hinten</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="photos-floor" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Wohnungsinformationen -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z"/>
+                                    </svg>
+                                    Wohnungsinformationen
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('apartment')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-group">
+                                    <label class="form-label">Anzahl der Zimmer:</label>
+                                    <div class="option-grid cols-3">
+                                        <label class="option-item">
+                                            <input type="radio" name="rooms" value="1" class="option-input">
+                                            <span class="option-label">1 Zimmer</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="rooms" value="2" class="option-input">
+                                            <span class="option-label">2 Zimmer</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="rooms" value="3" class="option-input">
+                                            <span class="option-label">3 Zimmer</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="rooms" value="4" class="option-input">
+                                            <span class="option-label">4 Zimmer</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="rooms" value="5" class="option-input">
+                                            <span class="option-label">5 Zimmer</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="radio" name="rooms" value="6+" class="option-input">
+                                            <span class="option-label">6+ Zimmer</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Größe der Wohnung (m²)</label>
+                                    <input type="number" class="form-input" name="size" placeholder="z.B. 85" inputmode="numeric">
+                                </div>
+                                <div id="photos-apartment" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Art der Sanierung -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M13.78,15.3L19.78,21.3L21.89,19.14L15.89,13.14L13.78,15.3M17.5,10.1C17.11,10.1 16.69,10.05 16.36,9.91L4.97,21.25L2.86,19.14L10.27,11.74L17.5,10.1Z"/>
+                                    </svg>
+                                    Art der Sanierung
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('renovation')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-group">
+                                    <label class="form-label">Erforderliche Arbeiten (Mehrfachauswahl möglich):</label>
+                                    <div class="option-grid">
+                                        <label class="option-item">
+                                            <input type="checkbox" name="renovationType" value="Komplettsanierung" class="option-input">
+                                            <span class="option-label">Komplettsanierung</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="renovationType" value="Teilsanierung" class="option-input">
+                                            <span class="option-label">Teilsanierung</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="renovationType" value="Reparaturarbeiten" class="option-input">
+                                            <span class="option-label">Reparaturarbeiten</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="photos-renovation" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Zimmerauswahl -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M8,3V5H4V9H2V5A2,2 0 0,1 4,3H8M22,5V9H20V5H16V3H20A2,2 0 0,1 22,5M20,19V15H22V19A2,2 0 0,1 20,21H16V19H20M4,19H8V21H4A2,2 0 0,1 2,19V15H4V19M18,12H17V10.5C17,9.11 15.89,8 14.5,8H9.5C8.11,8 7,9.11 7,10.5V12H6A1,1 0 0,0 5,13V18A1,1 0 0,0 6,19H18A1,1 0 0,0 19,18V13A1,1 0 0,0 18,12M9,10.5C9,10.22 9.22,10 9.5,10H14.5C14.78,10 15,10.22 15,10.5V12H9V10.5Z"/>
+                                    </svg>
+                                    Zimmerauswahl für Sanierung
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('roomSelection')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-group">
+                                    <label class="form-label">Zu sanierende Zimmer (Mehrfachauswahl möglich):</label>
+                                    <div class="option-grid">
+                                        <label class="option-item">
+                                            <input type="checkbox" name="selectedRooms" value="Bad" class="option-input">
+                                            <span class="option-label">Bad</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="selectedRooms" value="Küche" class="option-input">
+                                            <span class="option-label">Küche</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="selectedRooms" value="Wohnzimmer" class="option-input">
+                                            <span class="option-label">Wohnzimmer</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="selectedRooms" value="Schlafzimmer" class="option-input">
+                                            <span class="option-label">Schlafzimmer</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="selectedRooms" value="Kinderzimmer" class="option-input">
+                                            <span class="option-label">Kinderzimmer</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="selectedRooms" value="Flur" class="option-input">
+                                            <span class="option-label">Flur</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="selectedRooms" value="Balkon" class="option-input">
+                                            <span class="option-label">Balkon</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Sonstiges</label>
+                                    <input type="text" class="form-input" name="otherRooms" placeholder="Weitere Räume...">
+                                </div>
+                                <div id="photos-roomSelection" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Fußbodenarbeiten -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M2,7H4V9H2V7M22,7H20V9H22V7M14,7H12V9H14V7M10,7H8V9H10V7M6,7H4V9H6V7M18,7H16V9H18V7M2,11H4V13H2V11M6,11H8V13H6V11M10,11H12V13H10V11M14,11H16V13H14V11M18,11H20V13H18V11M22,11H20V13H22V11M2,15H4V17H2V15M6,15H8V17H6V15M10,15H12V17H10V15M14,15H16V17H14V15M18,15H20V17H18V15M22,15H20V17H22V15Z"/>
+                                    </svg>
+                                    Fußbodenarbeiten
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('flooring')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-group">
+                                    <label class="form-label">Vorhandenen Fußboden entfernen:</label>
+                                    <div class="option-grid">
+                                        <label class="option-item">
+                                            <input type="checkbox" name="removeFlooring" value="Laminat" class="option-input">
+                                            <span class="option-label">Laminat</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="removeFlooring" value="Linoleum" class="option-input">
+                                            <span class="option-label">Linoleum</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="removeFlooring" value="Parkett" class="option-input">
+                                            <span class="option-label">Parkett</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="removeFlooring" value="Teppich" class="option-input">
+                                            <span class="option-label">Teppich</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="removeFlooring" value="Fliesen" class="option-input">
+                                            <span class="option-label">Fliesen</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Neuen Fußboden einbauen:</label>
+                                    <div class="option-grid">
+                                        <label class="option-item">
+                                            <input type="checkbox" name="installFlooring" value="Laminat" class="option-input">
+                                            <span class="option-label">Laminat</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="installFlooring" value="Linoleum" class="option-input">
+                                            <span class="option-label">Linoleum</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="installFlooring" value="Parkett" class="option-input">
+                                            <span class="option-label">Parkett</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="installFlooring" value="Teppich" class="option-input">
+                                            <span class="option-label">Teppich</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="installFlooring" value="Fliesen" class="option-input">
+                                            <span class="option-label">Fliesen</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="installFlooring" value="Vinyl" class="option-input">
+                                            <span class="option-label">Vinyl</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="photos-flooring" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sanitärarbeiten -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M9,2V8H7V10H9V16A3,3 0 0,0 12,19A3,3 0 0,0 15,16V10H17V8H15V2H9M11,4H13V8H11V4Z"/>
+                                    </svg>
+                                    Sanitärarbeiten (Bad)
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('bathroom')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-group">
+                                    <label class="form-label">Badausstattung:</label>
+                                    <div class="option-grid">
+                                        <label class="option-item">
+                                            <input type="checkbox" name="bathroomWork" value="Fliesen erneuern" class="option-input">
+                                            <span class="option-label">Fliesen erneuern</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="bathroomWork" value="Badewanne" class="option-input">
+                                            <span class="option-label">Badewanne</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="bathroomWork" value="Dusche" class="option-input">
+                                            <span class="option-label">Dusche</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="bathroomWork" value="Waschbecken" class="option-input">
+                                            <span class="option-label">Waschbecken</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="bathroomWork" value="Toilette" class="option-input">
+                                            <span class="option-label">Toilette</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="bathroomWork" value="Armaturen" class="option-input">
+                                            <span class="option-label">Armaturen</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Gewünschte Fliesen (Größe/Farbe/Material)</label>
+                                    <textarea class="form-input form-textarea" name="tileSpecs" placeholder="Beschreibung der gewünschten Fliesen..."></textarea>
+                                </div>
+                                <div id="photos-bathroom" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Küchensanierung -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M18,2A2,2 0 0,1 20,4V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V4A2,2 0 0,1 6,2H18M6,4V8H18V4H6M6,10V12H8V10H6M10,10V12H12V10H10M14,10V12H16V10H14M6,14V16H8V14H6M10,14V16H12V14H10M14,14V16H16V14H14M6,18V20H8V18H6M10,18V20H12V18H10M14,18V20H16V18H14Z"/>
+                                    </svg>
+                                    Küchensanierung
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('kitchen')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-group">
+                                    <label class="form-label">Küchentyp:</label>
+                                    <div class="option-grid">
+                                        <label class="option-item">
+                                            <input type="checkbox" name="kitchenType" value="Küchenzeile" class="option-input">
+                                            <span class="option-label">Küchenzeile</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="kitchenType" value="Eck-Küche" class="option-input">
+                                            <span class="option-label">Eck-Küche</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="kitchenType" value="U-Form Küche" class="option-input">
+                                            <span class="option-label">U-Form Küche</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="kitchenType" value="Inselküche" class="option-input">
+                                            <span class="option-label">Inselküche</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Elektrogeräte:</label>
+                                    <div class="option-grid">
+                                        <label class="option-item">
+                                            <input type="checkbox" name="appliances" value="Herd" class="option-input">
+                                            <span class="option-label">Herd</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="appliances" value="Backofen" class="option-input">
+                                            <span class="option-label">Backofen</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="appliances" value="Kühlschrank" class="option-input">
+                                            <span class="option-label">Kühlschrank</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="appliances" value="Geschirrspüler" class="option-input">
+                                            <span class="option-label">Geschirrspüler</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="appliances" value="Mikrowelle" class="option-input">
+                                            <span class="option-label">Mikrowelle</span>
+                                        </label>
+                                        <label class="option-item">
+                                            <input type="checkbox" name="appliances" value="Abzugshaube" class="option-input">
+                                            <span class="option-label">Abzugshaube</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Anmerkungen zur Küchenplanung</label>
+                                    <textarea class="form-input form-textarea" name="kitchenNotes" placeholder="Spezielle Wünsche oder Anforderungen..."></textarea>
+                                </div>
+                                <div id="photos-kitchen" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Besondere Anforderungen -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M12,17.27L18.18,21L16.54,13.97L22,9.24L14.81,8.62L12,2L9.19,8.62L2,9.24L7.46,13.97L5.82,21L12,17.27Z"/>
+                                    </svg>
+                                    Besondere Anforderungen
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('special')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-group">
+                                    <label class="form-label">Gewünschte Farben / Materialien</label>
+                                    <textarea class="form-input form-textarea" name="colors" placeholder="Beschreibung der gewünschten Farben und Materialien..."></textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Zusätzliche Anforderungen</label>
+                                    <textarea class="form-input form-textarea" name="specialRequirements" placeholder="Smart Home Integration, spezielle Beleuchtung, barrierefreier Umbau..."></textarea>
+                                </div>
+                                <div id="photos-special" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Unterschrift -->
+                        <div class="form-section">
+                            <div class="section-header">
+                                <div class="section-title">
+                                    <svg class="icon" viewBox="0 0 24 24">
+                                        <path d="M14,10H19.5L14,4.5V10M5,3H15L21,9V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5C3,3.89 3.89,3 5,3M9,12H16V14H9V12M9,16H14V18H9V16Z"/>
+                                    </svg>
+                                    Unterschrift und Datum
+                                </div>
+                                <button type="button" class="photo-button" onclick="addPhoto('signature')">
+                                    <svg class="icon icon-sm" viewBox="0 0 24 24">
+                                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9Z"/>
+                                    </svg>
+                                    <span>Foto hinzufügen</span>
+                                </button>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Name des Auftraggebers</label>
+                                        <input type="text" class="form-input" name="customerName" placeholder="Max Mustermann">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Datum</label>
+                                        <input type="date" class="form-input" name="date">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label">Unterschrift</label>
+                                    <div class="signature-area">
+                                        Unterschrift hier einfügen<br>
+                                        <small>(Foto hinzufügen)</small>
+                                    </div>
+                                </div>
+                                <div id="photos-signature" class="photo-gallery hidden"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Floating Action Buttons -->
+            <div class="fab-container">
+                <button class="fab fab-primary" onclick="saveProject()" title="Speichern">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z"/>
+                    </svg>
+                </button>
+                <button class="fab fab-secondary" onclick="exportProject()" title="PDF Export">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Hidden file input -->
+        <input type="file" id="fileInput" accept="image/*" capture="environment" style="display: none;">
+    </div>
+    
+    <script>
+        // App State
+        let currentView = 'home';
+        let projects = [];
+        let currentProject = null;
+        let projectPhotos = {};
+        let currentPhotoSection = '';
+        
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load projects from localStorage
+            loadProjects();
+            updateProjectCount();
+            updateRecentProjects();
+            
+            // Set default date
+            const dateInput = document.querySelector('input[name="date"]');
+            if (dateInput) {
+                dateInput.value = new Date().toISOString().split('T')[0];
+            }
+            
+            // File input handler
+            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+            
+            // Form input handlers for auto-save
+            const form = document.getElementById('projectForm');
+            if (form) {
+                form.addEventListener('input', debounce(autoSave, 2000));
+                form.addEventListener('change', debounce(autoSave, 2000));
+            }
+            
+            // Handle form interactions
+            document.addEventListener('click', handleOptionClick);
+            
+            // Prevent form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveProject();
+            });
+            
+            // Handle iOS viewport
+            updateViewportHeight();
+            window.addEventListener('resize', updateViewportHeight);
+            
+            // Prevent iOS bounce
+            document.body.addEventListener('touchmove', function(e) {
+                if (!e.target.closest('.scrollable')) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        });
+        
+        // iOS Viewport fix
+        function updateViewportHeight() {
+            document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+        }
+        
+        // Navigation Functions
+        function showView(viewName) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+                view.classList.add('hidden');
+            });
+            const targetView = document.getElementById(viewName + 'View');
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                targetView.classList.add('active');
+            }
+            currentView = viewName;
+        }
+        
+        function showHome() {
+            showView('home');
+            updateRecentProjects();
+        }
+        
+        function showProjects() {
+            showView('projects');
+            updateProjectsList();
+        }
+        
+        // Project Management
+        function loadProjects() {
+            try {
+                const saved = localStorage.getItem('heidemannProjects');
+                projects = saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                console.error('Error loading projects:', e);
+                projects = [];
+            }
+        }
+        
+        function saveProjects() {
+            try {
+                localStorage.setItem('heidemannProjects', JSON.stringify(projects));
+            } catch (e) {
+                console.error('Error saving projects:', e);
+                showNotification('Fehler beim Speichern!', 'error');
+            }
+        }
+        
+        function createNewProject() {
+            currentProject = {
+                id: Date.now(),
+                name: `Auftrag ${new Date().toLocaleDateString('de-DE')}`,
+                created: new Date().toISOString(),
+                data: {},
+                photos: {}
+            };
+            projectPhotos = {};
+            
+            document.getElementById('formTitle').textContent = currentProject.name;
+            
+            // Reset form
+            const form = document.getElementById('projectForm');
+            if (form) {
+                form.reset();
+                document.querySelector('input[name="date"]').value = new Date().toISOString().split('T')[0];
+                
+                // Clear photo galleries
+                document.querySelectorAll('.photo-gallery').forEach(gallery => {
+                    gallery.classList.add('hidden');
+                    gallery.innerHTML = '';
+                });
+                
+                // Reset option selections
+                document.querySelectorAll('.option-item').forEach(item => {
+                    item.classList.remove('selected');
+                });
+            }
+            
+            showView('form');
+        }
+        
+        function loadProject(projectData) {
+            // Parse project if it's a string
+            if (typeof projectData === 'string') {
+                try {
+                    projectData = JSON.parse(projectData);
+                } catch (e) {
+                    console.error('Error parsing project data:', e);
+                    return;
+                }
+            }
+            
+            currentProject = projectData;
+            projectPhotos = projectData.photos || {};
+            
+            document.getElementById('formTitle').textContent = projectData.name;
+            
+            // Load form data
+            setTimeout(() => {
+                const form = document.getElementById('projectForm');
+                if (form && projectData.data) {
+                    // Reset all selections first
+                    document.querySelectorAll('.option-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    
+                    Object.keys(projectData.data).forEach(key => {
+                        const inputs = form.querySelectorAll(`[name="${key}"]`);
+                        inputs.forEach(input => {
+                            if (input.type === 'checkbox' || input.type === 'radio') {
+                                const value = Array.isArray(projectData.data[key]) ? 
+                                    projectData.data[key].includes(input.value) : 
+                                    projectData.data[key] === input.value;
+                                input.checked = value;
+                                
+                                // Update visual state
+                                if (value) {
+                                    input.closest('.option-item')?.classList.add('selected');
+                                }
+                            } else {
+                                input.value = projectData.data[key] || '';
+                            }
+                        });
+                    });
+                }
+                
+                // Load photos
+                updateAllPhotoGalleries();
+            }, 100);
+            
+            showView('form');
+        }
+        
+        function saveProject() {
+            if (!currentProject) return;
+            
+            // Show loading state
+            const saveButton = document.querySelector('.fab-primary');
+            if (saveButton) {
+                saveButton.innerHTML = '<div class="loading"></div>';
+            }
+            
+            // Collect form data
+            const form = document.getElementById('projectForm');
+            if (!form) return;
+            
+            const formData = new FormData(form);
+            const data = {};
+            
+            // Handle multiple values for checkboxes
+            for (let [key, value] of formData.entries()) {
+                if (data[key]) {
+                    if (Array.isArray(data[key])) {
+                        data[key].push(value);
+                    } else {
+                        data[key] = [data[key], value];
+                    }
+                } else {
+                    data[key] = value;
+                }
+            }
+            
+            // Update project
+            currentProject.data = data;
+            currentProject.photos = projectPhotos;
+            currentProject.lastModified = new Date().toISOString();
+            
+            // Save to projects array
+            const existingIndex = projects.findIndex(p => p.id === currentProject.id);
+            if (existingIndex >= 0) {
+                projects[existingIndex] = currentProject;
+            } else {
+                projects.push(currentProject);
+            }
+            
+            // Save to localStorage
+            saveProjects();
+            
+            updateProjectCount();
+            
+            // Restore button state
+            if (saveButton) {
+                saveButton.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z"/></svg>';
+            }
+            
+            showNotification('Auftrag gespeichert!', 'success');
+        }
+        
+        function autoSave() {
+            if (currentProject) {
+                saveProject();
+            }
+        }
+        
+        function exportProject() {
+            if (!currentProject) {
+                showNotification('Bitte speichern Sie den Auftrag zuerst.');
+                return;
+            }
+            
+            // Create professional PDF-style HTML export
+            const projectData = currentProject.data || {};
+            const photos = projectPhotos || {};
+            
+            let content = `
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${currentProject.name} - Heidemann Auftragsformular</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #1d1d1f; 
+            background: white; 
+            padding: 20px; 
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { 
+            background: linear-gradient(135deg, #1d1d1f 0%, #ff6b35 100%); 
+            color: white; 
+            padding: 40px 30px; 
+            text-align: center; 
+            border-radius: 12px; 
+            margin-bottom: 30px; 
+        }
+        .logo { 
+            font-size: 2.5rem; 
+            font-weight: 700; 
+            margin-bottom: 10px; 
+        }
+        .logo::after { 
+            content: "•"; 
+            color: #ff6b35; 
+            margin-left: 5px; 
+        }
+        .header h1 { 
+            font-size: 1.8rem; 
+            margin: 15px 0 10px; 
+            font-weight: 500; 
+        }
+        .section { 
+            background: white; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+            border: 1px solid #e5e7eb; 
+            margin-bottom: 20px; 
+            overflow: hidden; 
+            page-break-inside: avoid; 
+        }
+        .section-header { 
+            background: linear-gradient(to right, #f9fafb, #fff5f2); 
+            padding: 16px 20px; 
+            border-bottom: 1px solid #e5e7eb; 
+        }
+        .section-title { 
+            font-size: 1.2rem; 
+            font-weight: 600; 
+            color: #1d1d1f; 
+        }
+        .section-content { padding: 20px; }
+        .data-group { margin-bottom: 16px; }
+        .data-label { 
+            font-weight: 600; 
+            color: #ff6b35; 
+            font-size: 0.9rem; 
+            margin-bottom: 4px; 
+            display: block; 
+        }
+        .data-value { 
+            color: #1d1d1f; 
+            background: #f9fafb; 
+            padding: 8px 12px; 
+            border-radius: 6px; 
+            border: 1px solid #e5e7eb; 
+            font-size: 0.95rem; 
+        }
+        .data-value.multiple { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 6px; 
+            background: transparent; 
+            padding: 0; 
+            border: none; 
+        }
+        .data-value.multiple .item { 
+            background: #fff5f2; 
+            border: 1px solid #ff6b35; 
+            color: #ff6b35; 
+            padding: 4px 8px; 
+            border-radius: 4px; 
+            font-size: 0.85rem; 
+            font-weight: 500; 
+        }
+        .photos-section { 
+            margin-top: 16px; 
+            padding-top: 16px; 
+            border-top: 1px solid #e5e7eb; 
+        }
+        .photos-title { 
+            font-weight: 600; 
+            color: #1d1d1f; 
+            margin-bottom: 12px; 
+            font-size: 0.9rem; 
+        }
+        .photos-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); 
+            gap: 12px; 
+        }
+        .photo-item { 
+            border: 1px solid #e5e7eb; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            background: #f9fafb; 
+        }
+        .photo-item img { 
+            width: 100%; 
+            height: 120px; 
+            object-fit: cover; 
+            display: block; 
+        }
+        .photo-caption { 
+            padding: 8px; 
+            font-size: 0.75rem; 
+            color: #86868b; 
+            text-align: center; 
+        }
+        .signature-area { 
+            border: 2px dashed #d2d2d7; 
+            border-radius: 8px; 
+            padding: 40px; 
+            text-align: center; 
+            color: #86868b; 
+            background: #f9fafb; 
+            margin-top: 8px; 
+        }
+        .footer { 
+            margin-top: 40px; 
+            padding: 20px; 
+            background: #f9fafb; 
+            border-radius: 8px; 
+            text-align: center; 
+            color: #86868b; 
+            font-size: 0.85rem; 
+        }
+        @media print { 
+            body { padding: 0; } 
+            .container { max-width: none; } 
+            .section { page-break-inside: avoid; } 
+            .photos-grid { grid-template-columns: repeat(2, 1fr); } 
+        }
+        @page { margin: 1cm; size: A4; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">heidemann</div>
+            <h1>Wohnungssanierung - Auftragsformular</h1>
+            <div style="margin-top: 15px; opacity: 0.9;">
+                <div><strong>Auftrag:</strong> ${currentProject.name}</div>
+                <div><strong>Erstellt am:</strong> ${new Date(currentProject.created).toLocaleDateString('de-DE', { 
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                })}</div>
+                ${currentProject.lastModified ? `<div><strong>Zuletzt bearbeitet:</strong> ${new Date(currentProject.lastModified).toLocaleDateString('de-DE', { 
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                })}</div>` : ''}
+            </div>
+        </div>
+`;
+            
+            // Define all sections with their German labels
+            const sections = [
+                { key: 'address', title: 'Adressinformationen', fields: [
+                    { key: 'street', label: 'Straße und Hausnummer' },
+                    { key: 'city', label: 'Postleitzahl und Stadt' }
+                ]},
+                { key: 'floor', title: 'Etagenangaben', fields: [
+                    { key: 'floor', label: 'Etage' },
+                    { key: 'position', label: 'Lage der Wohnung' }
+                ]},
+                { key: 'apartment', title: 'Wohnungsinformationen', fields: [
+                    { key: 'rooms', label: 'Anzahl der Zimmer' },
+                    { key: 'size', label: 'Größe der Wohnung (m²)' }
+                ]},
+                { key: 'renovation', title: 'Art der Sanierung', fields: [
+                    { key: 'renovationType', label: 'Erforderliche Arbeiten' }
+                ]},
+                { key: 'roomSelection', title: 'Zimmerauswahl für Sanierung', fields: [
+                    { key: 'selectedRooms', label: 'Zu sanierende Zimmer' },
+                    { key: 'otherRooms', label: 'Sonstige Räume' }
+                ]},
+                { key: 'flooring', title: 'Fußbodenarbeiten', fields: [
+                    { key: 'removeFlooring', label: 'Vorhandenen Fußboden entfernen' },
+                    { key: 'installFlooring', label: 'Neuen Fußboden einbauen' }
+                ]},
+                { key: 'bathroom', title: 'Sanitärarbeiten (Bad)', fields: [
+                    { key: 'bathroomWork', label: 'Badausstattung' },
+                    { key: 'tileSpecs', label: 'Gewünschte Fliesen (Größe/Farbe/Material)' }
+                ]},
+                { key: 'kitchen', title: 'Küchensanierung', fields: [
+                    { key: 'kitchenType', label: 'Küchentyp' },
+                    { key: 'appliances', label: 'Elektrogeräte' },
+                    { key: 'kitchenNotes', label: 'Anmerkungen zur Küchenplanung' }
+                ]},
+                { key: 'special', title: 'Besondere Anforderungen', fields: [
+                    { key: 'colors', label: 'Gewünschte Farben / Materialien' },
+                    { key: 'specialRequirements', label: 'Zusätzliche Anforderungen' }
+                ]},
+                { key: 'signature', title: 'Unterschrift und Datum', fields: [
+                    { key: 'customerName', label: 'Name des Auftraggebers' },
+                    { key: 'date', label: 'Datum' }
+                ]}
+            ];
+            
+            // Generate sections
+            sections.forEach(section => {
+                content += `<div class="section">`;
+                content += `<div class="section-header"><div class="section-title">${section.title}</div></div>`;
+                content += `<div class="section-content">`;
+                
+                // Add form data
+                let hasData = false;
+                section.fields.forEach(field => {
+                    const value = projectData[field.key];
+                    if (value && value !== '') {
+                        hasData = true;
+                        content += `<div class="data-group">`;
+                        content += `<label class="data-label">${field.label}:</label>`;
+                        
+                        if (Array.isArray(value)) {
+                            content += `<div class="data-value multiple">`;
+                            value.forEach(item => {
+                                content += `<span class="item">${item}</span>`;
+                            });
+                            content += `</div>`;
+                        } else {
+                            content += `<div class="data-value">${value}</div>`;
+                        }
+                        content += `</div>`;
+                    }
+                });
+                
+                // Add photos
+                const sectionPhotos = photos[section.key];
+                if (sectionPhotos && sectionPhotos.length > 0) {
+                    hasData = true;
+                    content += `<div class="photos-section">`;
+                    content += `<div class="photos-title">Fotos (${sectionPhotos.length} Stück):</div>`;
+                    content += `<div class="photos-grid">`;
+                    
+                    sectionPhotos.forEach((photo, index) => {
+                        content += `<div class="photo-item">`;
+                        content += `<img src="${photo.url}" alt="Foto ${index + 1}" />`;
+                        content += `<div class="photo-caption">Foto ${index + 1} - ${new Date(photo.timestamp).toLocaleDateString('de-DE')}</div>`;
+                        content += `</div>`;
+                    });
+                    
+                    content += `</div></div>`;
+                }
+                
+                // Show "Keine Angaben" if no data
+                if (!hasData) {
+                    content += `<div class="data-value" style="color: #86868b; font-style: italic;">Keine Angaben</div>`;
+                }
+                
+                content += `</div></div>`;
+            });
+            
+            // Add signature area if no signature photo
+            const signaturePhotos = photos['signature'];
+            if (!signaturePhotos || signaturePhotos.length === 0) {
+                if (projectData.customerName || projectData.date) {
+                    content += `<div class="section">`;
+                    content += `<div class="section-header"><div class="section-title">Unterschrift</div></div>`;
+                    content += `<div class="section-content">`;
+                    content += `<div class="signature-area">`;
+                    content += `<div style="margin-bottom: 40px;">Unterschrift des Auftraggebers</div>`;
+                    content += `<div style="border-top: 1px solid #d2d2d7; padding-top: 10px; color: #1d1d1f;">`;
+                    if (projectData.customerName) content += `${projectData.customerName}`;
+                    if (projectData.customerName && projectData.date) content += ` • `;
+                    if (projectData.date) content += `${new Date(projectData.date).toLocaleDateString('de-DE')}`;
+                    content += `</div></div></div></div>`;
+                }
+            }
+            
+            // Footer
+            content += `
+        <div class="footer">
+            <div><strong>heidemann</strong> • Wohnungssanierung</div>
+            <div>Erstellt mit der Heidemann Auftrags-App</div>
+            <div>Generiert am: ${new Date().toLocaleDateString('de-DE', { 
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            })}</div>
+        </div>
+    </div>
+</body>
+</html>`;
+            
+            // Create and download file
+            const blob = new Blob([content], { type: 'text/html; charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentProject.name.replace(/[^a-z0-9äöüß]/gi, '_')}_Auftrag.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Auftrag exportiert! Öffnen Sie die Datei und drucken Sie als PDF.');
+        }
+        
+        function exportAllProjects() {
+            if (projects.length === 0) {
+                showNotification('Keine Aufträge zum Exportieren vorhanden.');
+                return;
+            }
+            
+            showNotification(`${projects.length} Aufträge werden exportiert...`);
+            
+            projects.forEach(project => {
+                currentProject = project;
+                projectPhotos = project.photos || {};
+                exportProject();
+            });
+        }
+        
+        // Photo Management
+        function addPhoto(sectionKey) {
+            currentPhotoSection = sectionKey;
+            document.getElementById('fileInput').click();
+        }
+        
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Check file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showNotification('Foto ist zu groß! Max. 5MB erlaubt.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const photo = {
+                    id: Date.now(),
+                    url: e.target.result,
+                    name: file.name,
+                    timestamp: new Date().toISOString()
+                };
+                
+                if (!projectPhotos[currentPhotoSection]) {
+                    projectPhotos[currentPhotoSection] = [];
+                }
+                projectPhotos[currentPhotoSection].push(photo);
+                
+                updatePhotoGallery(currentPhotoSection);
+                autoSave();
+                showNotification('Foto hinzugefügt!', 'success');
+            };
+            
+            reader.onerror = function() {
+                showNotification('Fehler beim Laden des Fotos!', 'error');
+            };
+            
+            reader.readAsDataURL(file);
+            
+            // Reset input
+            event.target.value = '';
+        }
+        
+        function removePhoto(sectionKey, photoId) {
+            if (projectPhotos[sectionKey]) {
+                projectPhotos[sectionKey] = projectPhotos[sectionKey].filter(p => p.id !== photoId);
+                updatePhotoGallery(sectionKey);
+                autoSave();
+                showNotification('Foto entfernt!');
+            }
+        }
+        
+        function updatePhotoGallery(sectionKey) {
+            const gallery = document.getElementById(`photos-${sectionKey}`);
+            if (!gallery) return;
+            
+            const photos = projectPhotos[sectionKey] || [];
+            
+            if (photos.length === 0) {
+                gallery.classList.add('hidden');
+                return;
+            }
+            
+            gallery.classList.remove('hidden');
+            gallery.innerHTML = `
+                <div class="gallery-title">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24" style="fill: #ff6b35;">
+                        <path d="M4,4H7L9,2H15L17,4H20A2,2 0 0,1 22,6V18A2,2 0 0,1 20,20H4A2,2 0 0,1 2,18V6A2,2 0 0,1 4,4M12,7A5,5 0 0,0 7,12A5,5 0 0,0 12,17A5,5 0 0,0 17,12A5,5 0 0,0 12,7Z"/>
+                    </svg>
+                    Fotos (${photos.length})
+                </div>
+                <div class="photo-grid">
+                    ${photos.map(photo => `
+                        <div class="photo-item">
+                            <img src="${photo.url}" alt="${photo.name}" class="photo-image">
+                            <button class="photo-remove" onclick="removePhoto('${sectionKey}', ${photo.id})">
+                                ×
+                            </button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function updateAllPhotoGalleries() {
+            Object.keys(projectPhotos).forEach(sectionKey => {
+                updatePhotoGallery(sectionKey);
+            });
+        }
+        
+        // Form Interactions
+        function handleOptionClick(e) {
+            const optionItem = e.target.closest('.option-item');
+            if (!optionItem) return;
+            
+            const input = optionItem.querySelector('input');
+            if (!input) return;
+            
+            // Prevent double click on input
+            if (e.target === input) return;
+            
+            e.preventDefault();
+            
+            if (input.type === 'radio') {
+                // Remove selected class from all radio items with same name
+                document.querySelectorAll(`input[name="${input.name}"]`).forEach(radio => {
+                    radio.closest('.option-item').classList.remove('selected');
+                });
+            }
+            
+            // Toggle the input
+            if (input.type === 'checkbox') {
+                input.checked = !input.checked;
+            } else if (input.type === 'radio') {
+                input.checked = true;
+            }
+            
+            // Update visual state
+            if (input.checked) {
+                optionItem.classList.add('selected');
+            } else {
+                optionItem.classList.remove('selected');
+            }
+            
+            // Trigger change event for auto-save
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        
+        // UI Updates
+        function updateProjectCount() {
+            const countElement = document.getElementById('projectCount');
+            if (countElement) {
+                countElement.textContent = `${projects.length} gespeichert`;
+            }
+        }
+        
+        function updateRecentProjects() {
+            const recentContainer = document.getElementById('recentProjects');
+            const recentList = document.getElementById('recentProjectsList');
+            
+            if (!recentContainer || !recentList) return;
+            
+            if (projects.length === 0) {
+                recentContainer.classList.add('hidden');
+                return;
+            }
+            
+            recentContainer.classList.remove('hidden');
+            const recentProjects = projects.slice(-3).reverse();
+            
+            recentList.innerHTML = recentProjects.map(project => {
+                const photoCount = Object.values(project.photos || {}).flat().length;
+                const photos = Object.values(project.photos || {}).flat().slice(0, 4);
+                
+                return `
+                    <div class="project-item" onclick='loadProject(${JSON.stringify(project)})'>
+                        <div class="project-header">
+                            <div class="project-info">
+                                <h3>${project.name}</h3>
+                                <p>Erstellt: ${new Date(project.created).toLocaleDateString('de-DE')}</p>
+                                ${project.lastModified ? `<p style="font-size: 0.9rem; color: #86868b;">Bearbeitet: ${new Date(project.lastModified).toLocaleDateString('de-DE')}</p>` : ''}
+                            </div>
+                            <div class="project-icon">
+                                <svg class="icon icon-lg" viewBox="0 0 24 24">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        ${photoCount > 0 ? `
+                            <div class="project-photos">
+                                ${photos.map(photo => `<img src="${photo.url}" class="photo-thumb" alt="">`).join('')}
+                                ${photoCount > 4 ? `<div class="photo-count">+${photoCount - 4}</div>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateProjectsList() {
+            const projectsList = document.getElementById('projectsList');
+            const emptyState = document.getElementById('emptyProjects');
+            
+            if (!projectsList || !emptyState) return;
+            
+            if (projects.length === 0) {
+                projectsList.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            projectsList.innerHTML = projects.map(project => {
+                const photoCount = Object.values(project.photos || {}).flat().length;
+                const photos = Object.values(project.photos || {}).flat().slice(0, 4);
+                
+                return `
+                    <div class="project-item" onclick='loadProject(${JSON.stringify(project)})'>
+                        <div class="project-header">
+                            <div class="project-info">
+                                <h3>${project.name}</h3>
+                                <p>Erstellt: ${new Date(project.created).toLocaleDateString('de-DE')}</p>
+                                ${project.lastModified ? `<p style="font-size: 0.9rem; color: #86868b;">Bearbeitet: ${new Date(project.lastModified).toLocaleDateString('de-DE')}</p>` : ''}
+                            </div>
+                            <div class="project-icon">
+                                <svg class="icon icon-lg" viewBox="0 0 24 24">
+                                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        ${photoCount > 0 ? `
+                            <div class="project-photos">
+                                ${photos.map(photo => `<img src="${photo.url}" class="photo-thumb" alt="">`).join('')}
+                                ${photoCount > 4 ? `<div class="photo-count">+${photoCount - 4}</div>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Utility Functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+        
+        // Camera Test Function
+        function testCamera() {
+            const input = document.getElementById('fileInput');
+            if (input) {
+                input.click();
+                currentPhotoSection = 'test';
+                showNotification('Kamera-Test gestartet...');
+            }
+        }
+        
+        // Add slide up animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideUp {
+                from {
+                    transform: translate(-50%, 0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translate(-50%, -100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
